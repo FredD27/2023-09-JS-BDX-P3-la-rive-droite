@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
-import { useNavigate } from "react-router-dom";
-import Date from "../../components/Inputs/Date";
+import { useNavigate, useParams } from "react-router-dom";
+import { format } from "date-fns";
+
 import Input from "../../components/Inputs/Input";
 import Select from "../../components/Inputs/Select";
+import DateComponent from "../../components/Inputs/Date";
 import TextArea from "../../components/Inputs/TextArea";
 import HeaderCourt from "../../components/Headers/HeaderCourt";
 import { useGlobalContext } from "../../contexts/GlobalContext";
@@ -12,7 +14,7 @@ import { useGlobalContext } from "../../contexts/GlobalContext";
 import ErrorMsg from "../../components/Alertes Messages/ErrorMsg";
 import SuccesMsg from "../../components/Alertes Messages/SuccesMsg";
 
-function AddFormation() {
+function EditFormation() {
   const {
     setErrorMsg,
     errorMsg,
@@ -24,6 +26,7 @@ function AddFormation() {
     apiService,
     user,
   } = useGlobalContext();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [addCourse, setAddCourse] = useState({
@@ -35,7 +38,7 @@ function AddFormation() {
     dateEnd: "",
     description: "",
   });
-  const [courseSaved, setCourseSaved] = useState([]);
+
   const handleAddCourse = async (event) => {
     event.preventDefault();
     if (
@@ -71,17 +74,16 @@ function AddFormation() {
         const cvId = data.id;
         addCourse.cvId = cvId;
 
-        await apiService.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/course/`,
+        await apiService.update(
+          `${import.meta.env.VITE_BACKEND_URL}/api/course/${id}`,
           addCourse
         );
 
-        setCourseSaved((prevData) => [...prevData, addCourse]);
-        setMsgContent("La formation a été ajoutée avec succès");
+        setMsgContent("La formation a été modifiée avec succès");
         setSuccesMsg(true);
         setTimeout(() => {
-          navigate("/profile");
           setSuccesMsg(false);
+          navigate("/profile");
         }, 2000);
       } catch (err) {
         console.error(err);
@@ -93,23 +95,56 @@ function AddFormation() {
       }
     }
   };
-  useEffect(() => {}, [courseSaved]);
+  useEffect(() => {
+    const getCourse = async () => {
+      try {
+        const response = await apiService.get(
+          `http://localhost:3310/api/course/${id}`
+        );
+        const course = response.data;
 
+        const dateBeginObject = new Date(course.date_begin);
+        const dateEndObject = new Date(course.date_end);
+
+        const formattedDateBegin = format(dateBeginObject, "yyyy-MM-dd");
+        const formattedDateEnd = format(dateEndObject, "yyyy-MM-dd");
+
+        course.dateBegin = formattedDateBegin;
+        course.dateEnd = formattedDateEnd;
+
+        setAddCourse(course);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getCourse();
+  }, [id]);
   return (
     <div>
       <HeaderCourt />
       <div className="container-page with-rounded-border">
-        <h1>Ajouter une formation</h1>
+        <h1>Modifier votre formation</h1>
         <form onSubmit={handleAddCourse}>
           <Select
             handleChange={(event) => handleChange(setAddCourse, "level", event)}
             fieldName="level"
             titleSelect="Niveau d'étude *"
           >
-            <option value="Baccalaureat">Baccalauréat</option>
-            <option value="Licence">Licence</option>
-            <option value="Master 1">Master 1</option>
-            <option value="Master 2">Master 2</option>
+            <option
+              value="Baccalaureat"
+              selected={addCourse.type === "Baccalaureat"}
+            >
+              Baccalauréat
+            </option>
+            <option value="Licence" selected={addCourse.type === "Licence"}>
+              Licence
+            </option>
+            <option value="Master 1" selected={addCourse.type === "Master 1"}>
+              Master 1
+            </option>
+            <option value="Master 2" selected={addCourse.type === "Master 2"}>
+              Master 2
+            </option>
           </Select>
           <Input
             titleInput="Domaine *"
@@ -129,19 +164,21 @@ function AddFormation() {
             valueInput={addCourse}
             handleChange={(event) => handleChange(setAddCourse, "name", event)}
           />
-          <Date
+          <DateComponent
+            titleCalendar="De :"
             fieldName="dateBegin"
             handleChange={(event) =>
               handleChange(setAddCourse, "dateBegin", event)
             }
-            titleCalendar="Date de début *"
+            value={addCourse.dateBegin}
           />
-          <Date
+          <DateComponent
+            titleCalendar="Jusqu'au :"
             fieldName="dateEnd"
             handleChange={(event) =>
               handleChange(setAddCourse, "dateEnd", event)
             }
-            titleCalendar="Date de fin *"
+            value={addCourse.dateEnd}
           />
           <TextArea
             titleInput="Description de la formation *"
@@ -158,7 +195,7 @@ function AddFormation() {
             {succesMsg && <SuccesMsg message={msgContent} />}
           </div>
           <button className="submit-btn-maxi" type="submit">
-            Ajouter la formation
+            Mettre à jour la formation
           </button>
         </form>
       </div>
@@ -166,4 +203,4 @@ function AddFormation() {
   );
 }
 
-export default AddFormation;
+export default EditFormation;

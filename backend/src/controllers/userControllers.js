@@ -51,7 +51,7 @@ const getUserById = async (req, res) => {
 const postUser = async (req, res) => {
   try {
     const { rows } = await models.user.create(req.body);
-    res.send({
+    res.status(201).send({
       insertId: rows.insertId,
       firstname: req.body.firstname,
       lastname: req.body.lastname,
@@ -102,27 +102,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-const getSkills = async (req, res) => {
-  try {
-    const rows = await models.competence.findAll();
-    res.status(201).send(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
-  }
-};
-
-const postSkills = async (req, res) => {
-  try {
-    const userId = +req.body.params.id;
-    const rows = await models.user.userCompetence(userId, req.body);
-    res.status(201).send(rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: err.message });
-  }
-};
-
 const postLogin = async (req, res) => {
   try {
     const user = await models.user.login(req.body);
@@ -161,23 +140,6 @@ const getProfile = async (req, res) => {
     req.user.id
   );
   res.send(req.user);
-};
-
-const addSkills = async (req, res) => {
-  try {
-    const userId = +req.params.id;
-    // sécurité
-    if (req.user.id !== userId && !req.user.is_admin) {
-      return res.status(403).send({ error: "You do not have permission" });
-    }
-
-    await models.userCompetence.addUserCompetences(userId, req.body);
-    const competences = await models.userCompetence.getUserCompetences(userId);
-
-    return res.status(201).send(competences);
-  } catch (err) {
-    return res.status(400).json({ message: err.message });
-  }
 };
 
 const getMatchingOffers = async (req, res) => {
@@ -268,9 +230,6 @@ module.exports = {
   deleteUser,
   getProfile,
   getUserById,
-  postSkills,
-  getSkills,
-  addSkills,
   setSkills,
   getMatchingOffers,
 };

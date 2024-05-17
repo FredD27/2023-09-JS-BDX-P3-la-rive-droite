@@ -44,7 +44,9 @@ class OfferManager extends AbstractManager {
 
   async getOffersByCompetenceIds(competenceIds) {
     const [result] = await this.database.query(
-      `SELECT DISTINCT offer.* FROM ${this.table} INNER JOIN offer_competence ON offer.id = offer_competence.offer_id WHERE offer_competence.competence_id IN (?)`,
+      `SELECT DISTINCT offer.* FROM ${this.table} 
+      INNER JOIN offer_competence ON offer.id = offer_competence.offer_id 
+      WHERE offer_competence.competence_id IN (?)`,
       [competenceIds]
     );
 

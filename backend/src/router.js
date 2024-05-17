@@ -29,11 +29,6 @@ router.get("/users/:id([0-9]+)/cvs", authMiddleware, cvControllers.getCv);
 router.get("/users/:id([0-9]+)", authMiddleware, userControllers.getUserById);
 router.get("/users/me", authMiddleware, userControllers.getProfile);
 router.post("/users", userControllers.postUser);
-router.post(
-  "/users/:id([0-9]+)/add/skills",
-  authMiddleware,
-  userControllers.addSkills
-);
 router.post("/users/:id([0-9]+)/set/skills", userControllers.setSkills);
 router.get(
   "/users/me/get-matching-offers",
@@ -54,11 +49,7 @@ router.delete(
   userControllers.deleteUser
 );
 /* SKILLS. */
-// TODO: A revoir pb security
-router.post("/user/skills", userControllers.postSkills);
-router.get("/user/skills", userControllers.getSkills);
 router.get("/skills", competenceControllers.getSkills);
-// router.post("/user/skills/:id([0-9]+)", userControllers.postSkills);
 router.post("/login", userControllers.postLogin);
 
 /* OFFERS. */
@@ -90,37 +81,7 @@ router.post(
   offerControllers.addSkills
 );
 
-// router.get(
-//   "/offers/:id([0-9]+)/group/offers",
-//   authMiddleware,
-//   authAdminMiddleware,
-//   OfferCompetenceManager.getOfferBySkill
-// );
-
-// router.get(
-//   "/offers/:id([0-9]+)/group/offers",
-//   authMiddleware,
-//   authAdminMiddleware,
-//   async (req, res) => {
-//     console.log("Début de la route");
-//     try {
-//       // Votre logique de route ici
-//       await OfferCompetenceManager.getOfferBySkill(req, res);
-//       console.log("Fin de la route (success)");
-//     } catch (error) {
-//       console.error(error);
-//       console.log("Fin de la route (erreur)");
-//       res.status(500).send("Internal Server Error");
-//     }
-//   }
-// );
-
 /* EXPERIENCES. */
-router.get(
-  "/experiences",
-  authMiddleware,
-  experienceControllers.getExperiences
-);
 router.get(
   "/experiences/by-cv-id/:id([0-9]+)",
   authMiddleware,
@@ -136,11 +97,11 @@ router.post(
   authMiddleware,
   experienceControllers.postExperience
 );
-// router.put(
-//   "/experience/:id([0-9]+)",
-//   authMiddleware,
-//   experienceControllers.updateExperience
-// );
+router.put(
+  "/experience/:id([0-9]+)",
+  authMiddleware,
+  experienceControllers.updateExperience
+);
 router.delete(
   "/experience/:id([0-9]+)",
   authMiddleware,
@@ -148,23 +109,23 @@ router.delete(
 );
 
 /* COURSES. */
-router.get("/course", authMiddleware, courseControllers.getCourse);
 router.get(
   "/courses/by-cv-id/:id([0-9]+)",
   authMiddleware,
   courseControllers.getCoursesByCvId
 );
+// Pas utilisé en front
 router.get(
   "/course/:id([0-9]+)",
   authMiddleware,
   courseControllers.getCourseById
 );
 router.post("/course", authMiddleware, courseControllers.postCourse);
-// router.put(
-//   "/course/:id([0-9]+)",
-//   authMiddleware,
-//   courseControllers.updateCourse
-// );
+router.put(
+  "/course/:id([0-9]+)",
+  authMiddleware,
+  courseControllers.updateCourse
+);
 router.delete(
   "/course/:id([0-9]+)",
   authMiddleware,
@@ -172,10 +133,6 @@ router.delete(
 );
 
 // UPLOADS
-router.get("/upload/:id", authMiddleware, uploadController.getUploadById);
-
-router.get("/uploads", uploadController.getAllUploads);
-
 router.post(
   "/uploads/:id",
   authMiddleware,
@@ -183,11 +140,4 @@ router.post(
   uploadController.createUpload
 );
 
-// router.put("/uploads", authMiddleware, uploadController.updateUpload);
-
-/* CV. */
-router.post("/cvs", authMiddleware, cvControllers.postCv);
-
-// router.post("/signin", userControllers.postUser);
-// router.update("/signin", userControllers.putUser);
 module.exports = router;

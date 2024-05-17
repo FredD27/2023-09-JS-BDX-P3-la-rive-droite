@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { format } from "date-fns";
 
 import "./card-model.css";
+import { useNavigate } from "react-router-dom";
 
 function CardExperience({
   id,
@@ -21,6 +22,7 @@ function CardExperience({
     }
     return `${chaine.slice(0, limite)}...`;
   };
+  const navigate = useNavigate();
 
   const dateBeginObject = new Date(dateBegin);
   const dateEndObject = new Date(dateEnd);
@@ -40,6 +42,16 @@ function CardExperience({
             }}
           >
             <i className="fa-solid fa-trash-can" />
+          </button>
+          <button
+            className="invisible-button"
+            aria-label="toggleFavorite"
+            type="button"
+            onClick={() => {
+              navigate(`/profile/experience/edit/${id}`);
+            }}
+          >
+            <i className="fa-solid  fa-pen-nib" />
           </button>
         </div>
       </div>

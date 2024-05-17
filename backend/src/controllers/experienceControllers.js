@@ -5,16 +5,6 @@ const models = require("../models/index");
 //   return jwt.sign(data, process.env.APP_SECRET);
 // }
 
-const getExperiences = async (_, res) => {
-  try {
-    const rows = await models.experience.findAll();
-    res.send(rows);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(500);
-  }
-};
-
 const getExperiencesByCvId = async (req, res) => {
   try {
     const rows = await models.experience.findAllByCvId(req.params.id);
@@ -52,23 +42,23 @@ const postExperience = async (req, res) => {
   }
 };
 
-// const updateExperience = async (req, res) => {
-//   try {
-//     const id = parseInt(req.params.id, 10);
-//     if (!id) {
-//       res.sendStatus(500);
-//     }
+const updateExperience = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id) {
+      res.sendStatus(500);
+    }
 
-//     const result = await models.experience.update(id, req.body);
-//     if (result.affectedRows === 0) {
-//       res.sendStatus(500);
-//     }
-//     res.sendStatus(200);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(422).send({ error: error.message });
-//   }
-// };
+    const result = await models.experience.update(id, req.body);
+    if (result.affectedRows === 0) {
+      res.sendStatus(500);
+    }
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(422).send({ error: error.message });
+  }
+};
 
 const deleteExperienceById = async (req, res) => {
   try {
@@ -83,10 +73,9 @@ const deleteExperienceById = async (req, res) => {
 };
 
 module.exports = {
-  getExperiences,
   getExperienceById,
   postExperience,
-  // updateExperience,
+  updateExperience,
   deleteExperienceById,
   getExperiencesByCvId,
 };

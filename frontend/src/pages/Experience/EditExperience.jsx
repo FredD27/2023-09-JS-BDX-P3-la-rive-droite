@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import "./add-experience.css";
+import { useParams } from "react-router-dom";
+import { format } from "date-fns";
+
 import Input from "../../components/Inputs/Input";
 import Select from "../../components/Inputs/Select";
 import CheckboxCondition from "../../components/Inputs/CheckboxCondition";
-import Date from "../../components/Inputs/Date";
+import DateComponent from "../../components/Inputs/Date";
 import TextArea from "../../components/Inputs/TextArea";
 import HeaderCourt from "../../components/Headers/HeaderCourt";
 import { useGlobalContext } from "../../contexts/GlobalContext";
@@ -13,8 +16,9 @@ import { useGlobalContext } from "../../contexts/GlobalContext";
 import ErrorMsg from "../../components/Alertes Messages/ErrorMsg";
 import SuccesMsg from "../../components/Alertes Messages/SuccesMsg";
 
-function AddExperience() {
+function EditExperience() {
   const globalContext = useGlobalContext();
+  const { id } = useParams();
 
   const [addXp, setAddXp] = useState({
     id: uuid(),
@@ -24,12 +28,11 @@ function AddExperience() {
     type: "",
     isWorking: false,
     dateBegin: "",
-    dateEnd: null,
+    dateEnd: "",
     description: null,
     cvId: null,
   });
 
-  const [xpSaved, setXpSaved] = useState([]);
   const handleAddXp = async (event) => {
     event.preventDefault();
     if (
@@ -60,6 +63,8 @@ function AddExperience() {
       }, 2000);
     } else {
       try {
+        // ici on récupère l'id du cv, et le back fait en sorte
+        // que si l'utilisateur n'a pas de cv, il en crée un
         const { data } = await globalContext.apiService.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/users/${
             globalContext.user.id
@@ -68,13 +73,11 @@ function AddExperience() {
         const cvId = data.id;
 
         addXp.cvId = cvId;
-
-        await globalContext.apiService.post(
-          `${import.meta.env.VITE_BACKEND_URL}/api/experience/`,
+        await globalContext.apiService.update(
+          `${import.meta.env.VITE_BACKEND_URL}/api/experience/${id}`,
           addXp
         );
 
-        setXpSaved((prevData) => [...prevData, addXp]);
         globalContext.setMsgContent("L'expérience a été ajoutée avec");
         globalContext.setSuccesMsg(true);
         setTimeout(() => {
@@ -91,12 +94,35 @@ function AddExperience() {
       }
     }
   };
-  useEffect(() => {}, [xpSaved]);
+  useEffect(() => {
+    const getExperience = async () => {
+      try {
+        const response = await globalContext.apiService.get(
+          `http://localhost:3310/api/experience/${id}`
+        );
+        const experience = response.data;
+
+        const dateBeginObject = new Date(experience.date_begin);
+        const dateEndObject = new Date(experience.date_end);
+
+        const formattedDateBegin = format(dateBeginObject, "yyyy-MM-dd");
+        const formattedDateEnd = format(dateEndObject, "yyyy-MM-dd");
+
+        experience.dateBegin = formattedDateBegin;
+        experience.dateEnd = formattedDateEnd;
+
+        setAddXp(experience);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getExperience();
+  }, [id]);
   return (
     <>
       <HeaderCourt />
       <div className="container-page with-rounded-border">
-        <h1>Ajouter une expérience</h1>
+        <h1>Modifier votre expérience</h1>
         <form onSubmit={handleAddXp}>
           <div className="container-input">
             <Input
@@ -137,10 +163,18 @@ function AddExperience() {
                 globalContext.handleChange(setAddXp, "type", event)
               }
             >
-              <option value="stage">Stage</option>
-              <option value="alternance">Alternance</option>
-              <option value="CDD">CDD</option>
-              <option value="CDI">CDI</option>
+              <option value="stage" selected={addXp.type === "stage"}>
+                Stage
+              </option>
+              <option value="alternance" selected={addXp.type === "alternance"}>
+                Alternance
+              </option>
+              <option value="CDD" selected={addXp.type === "CDD"}>
+                CDD
+              </option>
+              <option value="CDI" selected={addXp.type === "CDI"}>
+                CDI
+              </option>
             </Select>
             <div className="container-checkbox-experience">
               <CheckboxCondition
@@ -155,19 +189,21 @@ function AddExperience() {
                 }
               />
             </div>
-            <Date
+            <DateComponent
               titleCalendar="De :"
               fieldName="dateBegin"
               handleChange={(event) =>
                 globalContext.handleChange(setAddXp, "dateBegin", event)
               }
+              value={addXp.dateBegin}
             />
-            <Date
+            <DateComponent
               titleCalendar="Jusqu'au :"
               fieldName="dateEnd"
               handleChange={(event) =>
                 globalContext.handleChange(setAddXp, "dateEnd", event)
               }
+              value={addXp.dateEnd}
             />
             <TextArea
               titleInput="Description du poste *"
@@ -189,7 +225,7 @@ function AddExperience() {
             </div>
           </div>
           <button className="submit-btn-maxi" type="submit">
-            Ajouter l'expérience
+            Mettre à jour l'expérience
           </button>
         </form>
       </div>
@@ -197,4 +233,4 @@ function AddExperience() {
   );
 }
 
-export default AddExperience;
+export default EditExperience;

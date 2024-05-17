@@ -11,17 +11,13 @@ import CardFormation from "../../components/CardModel/CardFormation";
 import CardExperience from "../../components/CardModel/CardExperience";
 import AddDetailsCV from "../../components/Add Something/AddSomething";
 import HeaderCourt from "../../components/Headers/HeaderCourt";
-// import { useSignContext } from "../../contexts/SignContext";
 
 function UserProfileModel() {
   const navigate = useNavigate();
   const globalContext = useGlobalContext();
-  // const { skills, setSkills } = useSignContext();
   const [getProfile, setGetProfile] = useState({});
-  // const [userCompetences, setUserCompetences] = useState({});
   const [experiences, setExperiences] = useState([]);
   const [courses, setCourses] = useState([]);
-  // const { experiences, courses } = useLoaderData();
 
   const getUserProfile = async () => {
     try {

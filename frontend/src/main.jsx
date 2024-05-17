@@ -11,17 +11,13 @@ import LogIn from "./pages/Connexion/LogIn";
 import UserProfileModel from "./pages/ProfileUser/UserProfileModel";
 import AddExperience from "./pages/Experience/AddExperience";
 import AddFormation from "./pages/Formation/AddFormation";
-import Dashboard1 from "./pages/Dashboard/Dashboard1";
-import Dashboard2 from "./pages/Dashboard/Dashboard2";
-import Dashboard3 from "./pages/Dashboard/Dashboard3";
+import DashboardGuard from "./pages/Dashboard/DashboardGuard";
+import DashboardOffer from "./pages/Dashboard/DashboardOffer";
+import DashboardUser from "./pages/Dashboard/DashboardUser";
 import AddOffer from "./pages/Offer/AddOffer";
 import EditOffer from "./pages/Offer/EditOffer";
 // Import Contexts.
-import AdminContextProvider from "./contexts/AdminContext";
-import SignContextProvider from "./contexts/SignContext";
-import LogContextProvider from "./contexts/LogContext";
 import GlobalContextProvider from "./contexts/GlobalContext";
-import UserContextProvider from "./contexts/UserContext";
 // Import de loaders.
 import currentUserProfileLoader from "./loaders/current-user-profil.loader";
 import currentAdmin from "./loaders/current-admin.loader";
@@ -31,6 +27,8 @@ import ApiService from "./services/api.service";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import EditUser from "./pages/ProfileUser/EditUser";
+import EditExperience from "./pages/Experience/EditExperience";
+import EditFormation from "./pages/Formation/EditFormation";
 
 const apiService = new ApiService();
 
@@ -40,9 +38,7 @@ const router = createBrowserRouter([
     loader: async () => currentUserProfileLoader(apiService),
     element: (
       <GlobalContextProvider apiService={apiService}>
-        <UserContextProvider>
-          <App />
-        </UserContextProvider>
+        <App />
       </GlobalContextProvider>
     ),
     children: [
@@ -56,27 +52,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/signin",
-        element: (
-          <SignContextProvider>
-            <SignIn />
-          </SignContextProvider>
-        ),
+        element: <SignIn />,
       },
       {
         path: "/login",
-        element: (
-          <LogContextProvider>
-            <LogIn />
-          </LogContextProvider>
-        ),
+        element: <LogIn />,
       },
       {
         path: "/profile",
-        element: (
-          <SignContextProvider>
-            <UserProfileModel />
-          </SignContextProvider>
-        ),
+        element: <UserProfileModel />,
       },
       {
         path: "/profile/edit/:id",
@@ -87,28 +71,33 @@ const router = createBrowserRouter([
         element: <AddExperience />,
       },
       {
+        path: "/profile/experience/edit/:id",
+        element: <EditExperience />,
+      },
+      {
         path: "/profile/add/formation",
         element: <AddFormation />,
       },
       {
+        path: "/profile/formation/edit/:id",
+        element: <EditFormation />,
+      },
+      {
         path: "/dashboard",
-        element: (
-          <AdminContextProvider>
-            <Dashboard1 />
-          </AdminContextProvider>
-        ),
+        element: <DashboardGuard />,
         loader: async () => currentAdmin(apiService),
         children: [
           {
-            path: "/dashboard/user",
-            element: <Dashboard3 />,
-          },
-          {
-            path: "/dashboard/candidates",
-            element: <Dashboard2 />,
-          },
-          {
             path: "/dashboard/offer",
+            element: <DashboardOffer />,
+          },
+          {
+            path: "/dashboard/user",
+            element: <DashboardUser />,
+          },
+
+          {
+            path: "/dashboard/offer/add",
             element: <AddOffer />,
           },
           {

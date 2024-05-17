@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import HeaderLongResearch from "../../components/Headers/HeaderLongResearch";
 import { useGlobalContext } from "../../contexts/GlobalContext";
 import "./Home.css";
 import CardOffre from "../../components/CardModel/CardOffre";
-import { useUserContext } from "../../contexts/UserContext";
 
 import HomeCard from "../../components/HomeCard/HomeCard";
 import CardOffer from "../../components/CardModel/CardOffer";
 
 function Home() {
-  const { goToOffer, apiService, user } = useGlobalContext();
-  const { toggleFavorite } = useUserContext();
+  const navigate = useNavigate;
+  const { apiService, user } = useGlobalContext();
+
+  const [favorites, setFavorites] = useState([]);
+
+  const toggleFavorite = (idAnnonce) => {
+    const newListe = [...favorites, idAnnonce];
+    setFavorites(newListe);
+  };
+
   const [matchingOffers, setMatchingOffers] = useState([]);
 
   useEffect(() => {
@@ -51,7 +60,9 @@ function Home() {
                 key={offer.id}
                 offer={offer}
                 toggleFavorite={toggleFavorite}
-                goToOffer={goToOffer}
+                goToOffer={() => {
+                  navigate(`/offer/${offer.id}`);
+                }}
               />
             ))
           ) : (

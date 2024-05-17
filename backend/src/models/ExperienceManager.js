@@ -29,40 +29,40 @@ class ExperienceManager extends AbstractManager {
     }
   }
 
-  // async update(id, experience) {
-  //   const {
-  //     title,
-  //     company,
-  //     city,
-  //     type,
-  //     isWorking,
-  //     dateBegin,
-  //     dateEnd,
-  //     description,
-  //   } = experience;
+  async update(id, experience) {
+    const {
+      title,
+      company,
+      city,
+      type,
+      isWorking,
+      dateBegin,
+      dateEnd,
+      description,
+    } = experience;
 
-  //   try {
-  //     const [result] = await this.database.query(
-  //       `UPDATE ${this.table} SET title = ?, company = ?, city = ?, type = ?, is_working = ?, date_begin = ?, date_end = ?, description = ? WHERE id = ?`,
-  //       [
-  //         title,
-  //         company,
-  //         city,
-  //         type,
-  //         isWorking,
-  //         dateBegin,
-  //         dateEnd,
-  //         description,
-  //         id,
-  //       ]
-  //     );
+    try {
+      const [result] = await this.database.query(
+        `UPDATE ${this.table} SET title = ?, company = ?, city = ?, type = ?, is_working = ?, date_begin = ?, date_end = ?, description = ? WHERE id = ?`,
+        [
+          title,
+          company,
+          city,
+          type,
+          isWorking,
+          dateBegin,
+          dateEnd,
+          description,
+          id,
+        ]
+      );
 
-  //     return result;
-  //   } catch (err) {
-  //     console.error(err);
-  //     return null;
-  //   }
-  // }
+      return result;
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
 
   async findAllByCvId(cvId) {
     try {

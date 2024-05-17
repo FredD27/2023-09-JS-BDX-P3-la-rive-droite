@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ButtonMini from "../../components/Boutons/ButtonMini";
 import { useGlobalContext } from "../../contexts/GlobalContext";
-import { useAdminContext } from "../../contexts/AdminContext";
 
 function Dashboard1() {
-  const { unauthorized, goToOffer, apiService } = useGlobalContext();
-  const { goToEditOffer } = useAdminContext();
+  const navigate = useNavigate();
+  const { apiService } = useGlobalContext();
 
-  const { handleAddOffer, handleUsers } = useAdminContext();
   const [offers, setOffers] = useState([]);
 
   const deleteOffer = async (id) => {
@@ -50,12 +48,10 @@ function Dashboard1() {
   };
 
   useEffect(() => {
-    unauthorized();
     fetchOffers();
   }, []);
 
-  return window.location.pathname === "/dashboard" ||
-    window.location.pathname === "/dashboard/" ? (
+  return (
     <div className="container">
       <div className="d-flex justify-content-between align-items-center mb-5">
         <h4 className="tab">Tableau de bord</h4>
@@ -63,12 +59,16 @@ function Dashboard1() {
           <ButtonMini
             className="mx-3"
             textBtn="Ajouter une offre"
-            onClick={handleAddOffer}
+            onClick={() => {
+              navigate("/dashboard/offer/add");
+            }}
           />
           <ButtonMini
             className="mx-3"
             textBtn="Tableau d'Utilisateurs"
-            onClick={handleUsers}
+            onClick={() => {
+              navigate("/dashboard/user");
+            }}
           />
         </div>
       </div>
@@ -92,7 +92,7 @@ function Dashboard1() {
                 <button
                   type="button"
                   aria-label="editoffer"
-                  onClick={() => goToEditOffer(offer.id)}
+                  onClick={() => navigate(`/dashboard/edit-offer/${offer.id}`)}
                   className="invisible-button mx-2"
                 >
                   <i className="fa-solid fa-pen" />
@@ -100,7 +100,7 @@ function Dashboard1() {
                 <button
                   type="button"
                   aria-label="getoffer"
-                  onClick={() => goToOffer(offer.id)}
+                  onClick={() => navigate(`/offer/${offer.id}`)}
                   className="invisible-button mx-2"
                 >
                   <i className="fa-solid fa-eye" />
@@ -118,10 +118,6 @@ function Dashboard1() {
           ))}
         </tbody>
       </table>
-    </div>
-  ) : (
-    <div>
-      <Outlet />
     </div>
   );
 }
